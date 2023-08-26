@@ -16,13 +16,31 @@
 ///   File: main_opt.hpp
 ///
 /// Author: $author$
-///   Date: 6/20/2023
+///   Date: 6/20/2023. 8/15/2023
 //////////////////////////////////////////////////////////////////////////
 #ifndef XOS_APP_CONSOLE_FILA_VERSION_MAIN_OPT_HPP
 #define XOS_APP_CONSOLE_FILA_VERSION_MAIN_OPT_HPP
 
 #include "xos/app/console/version/main.hpp"
 #include "xos/lib/fila/version.hpp"
+
+///////////////////////////////////////////////////////////////////////
+#define XOS_APP_CONSOLE_FILA_VERSION_MAIN_OPTIONS_CHARS_EXTEND \
+
+#define XOS_APP_CONSOLE_FILA_VERSION_MAIN_OPTIONS_OPTIONS_EXTEND \
+
+///////////////////////////////////////////////////////////////////////
+#define XOS_APP_CONSOLE_FILA_VERSION_MAIN_OPTIONS_CHARS \
+   XOS_APP_CONSOLE_FILA_VERSION_MAIN_OPTIONS_CHARS_EXTEND \
+   XOS_APP_CONSOLE_VERSION_MAIN_OPTIONS_CHARS \
+
+#define XOS_APP_CONSOLE_FILA_VERSION_MAIN_OPTIONS_OPTIONS \
+   XOS_APP_CONSOLE_FILA_VERSION_MAIN_OPTIONS_OPTIONS_EXTEND \
+   XOS_APP_CONSOLE_VERSION_MAIN_OPTIONS_OPTIONS \
+
+///////////////////////////////////////////////////////////////////////
+#define XOS_APP_CONSOLE_FILA_VERSION_MAIN_ARGS 0
+#define XOS_APP_CONSOLE_FILA_VERSION_MAIN_ARGV 0,
 
 namespace xos {
 namespace app {
@@ -74,6 +92,49 @@ protected:
             err = extends::run(argc, argv, env);
         }
         return err;
+    }
+
+    /// on_option
+    virtual int on_option
+    (int optval, const char_t* optarg, const char_t* optname,
+     int optind, int argc, char_t**argv, char_t**env) {
+        int err = 0;
+        switch(optval) {
+        default:
+            err = extends::on_option(optval, optarg, optname, optind, argc, argv, env);
+        }
+        return err;
+    }
+    
+    /// option_usage
+    virtual const char_t* option_usage(const char_t*& optarg, const struct option* longopt) {
+        const char_t* chars = "";
+        switch(longopt->val) {
+        default:
+            chars = extends::option_usage(optarg, longopt);
+            break;
+        }
+        return chars;
+    }
+
+    /// options
+    virtual const char_t* options(const struct option*& longopts) {
+        static const char_t* chars = XOS_APP_CONSOLE_FILA_VERSION_MAIN_OPTIONS_CHARS;
+        static struct option optstruct[]= {
+            XOS_APP_CONSOLE_FILA_VERSION_MAIN_OPTIONS_OPTIONS
+            {0, 0, 0, 0}};
+        longopts = optstruct;
+        return chars;
+    }
+
+    /// arguments
+    virtual const char_t* arguments(const char_t**& argv) {
+        static const char_t* _args = XOS_APP_CONSOLE_FILA_VERSION_MAIN_ARGS;
+        static const char_t* _argv[] = {
+            XOS_APP_CONSOLE_FILA_VERSION_MAIN_ARGV
+            0};
+        argv = _argv;
+        return _args;
     }
 
 protected:
